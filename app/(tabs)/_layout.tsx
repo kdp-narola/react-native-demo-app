@@ -1,5 +1,5 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Tabs, useRouter } from 'expo-router';
+import React, { useContext, useEffect } from 'react';
 import { Platform } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
@@ -7,9 +7,16 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import AuthContext, { AuthType } from '../Contexts/authContext';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { userData } = useContext(AuthContext) as AuthType;
+  const router = useRouter();
+
+  useEffect(() => {
+    if(!userData) router.replace('/login');
+  },[userData]);
 
   return (
     <Tabs
@@ -20,14 +27,17 @@ export default function TabLayout() {
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
           ios: {
-            // Use a transparent background on iOS to show the blur effect
             position: 'absolute',
           },
           default: {},
         }),
+        sceneStyle: {
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+        },
       }}>
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
@@ -41,9 +51,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="login"
+        name="profile"
         options={{
-          title: 'Login',
+          title: 'Profile',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
