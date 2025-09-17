@@ -31,9 +31,13 @@ export default function TabLayout() {
           },
           default: {},
         }),
+        sceneStyle: {
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+        },
       }}>
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,

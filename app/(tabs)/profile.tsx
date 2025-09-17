@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import React, { useContext } from "react";
-import { Button, Text, View } from "react-native";
+import { Button, StyleSheet, Text, View } from "react-native";
 import AuthContext, { AuthType } from "../Contexts/authContext";
 
 export default function ProfileScreen() {
@@ -14,10 +14,19 @@ export default function ProfileScreen() {
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Hello, welcome!</Text>
+      <Text style={styles.text}>Hello, welcome!</Text>
       {userData?.email && (
         <Button title="Logout" onPress={handleLogout} />
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  text: {
+    fontSize: 20,
+    textAlign: "center",
+    fontWeight: "bold",
+    marginBottom: 20
+  },
+});

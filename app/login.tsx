@@ -1,4 +1,4 @@
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
 import AuthContext, { AuthType } from "./Contexts/authContext";
@@ -11,12 +11,11 @@ const router = useRouter();
   const [remember, setRemember] = useState(false);
 
   useEffect(() => {
-    if(userData) router.replace("/");
+    if(userData) router.replace("/(tabs)/home");
   },[userData]);
 
   const handleLogin = async () => {
     setUserData({ email });
-    router.replace("/");
   };
 
   return (
@@ -65,14 +64,12 @@ const router = useRouter();
           <Text className="text-gray-500">Remember me</Text>
         </TouchableOpacity>
 
-        <Link href="/" asChild>
-          <TouchableOpacity
-            onPress={handleLogin}
-            className="w-full sm:w-[500px] lg:w-72 h-12 rounded-lg bg-[#7f56da] flex items-center justify-center"
-          >
-            <Text className="text-white text-base font-medium">Sign In</Text>
-          </TouchableOpacity>
-        </Link>
+        <TouchableOpacity
+          onPress={handleLogin}
+          className="w-full sm:w-[500px] lg:w-72 h-12 rounded-lg bg-[#7f56da] flex items-center justify-center"
+        >
+          <Text className="text-white text-base font-medium">Sign In</Text>
+        </TouchableOpacity>
 
         <Text className="text-gray-500 mt-3 text-center lg:text-left w-full">
           Don't have an account?{" "}
