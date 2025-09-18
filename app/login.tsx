@@ -5,7 +5,7 @@ import AuthContext, { AuthType } from "./Contexts/authContext";
 
 const Login: React.FC = () => {
   const { setUserData, userData } = useContext(AuthContext) as AuthType;
-const router = useRouter();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
