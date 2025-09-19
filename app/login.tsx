@@ -6,16 +6,27 @@ import AuthContext, { AuthType } from "./Contexts/authContext";
 const Login: React.FC = () => {
   const { setUserData, userData } = useContext(AuthContext) as AuthType;
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    if(userData) router.replace("/(tabs)/home");
-  },[userData]);
+    if (userData) router.replace("/(tabs)/tasks");
+  }, [userData]);
 
-  const handleLogin = async () => {
-    setUserData({ email });
+  const handleLogin = () => {
+    if (!username || !password) {
+      setError("Please enter username and password");
+      return;
+    }
+
+    if (username === "admin" && password === "1234") {
+      setUserData({ username });
+      setError("");
+    } else {
+      setError("Invalid username or password");
+    }
   };
 
   return (
@@ -35,11 +46,15 @@ const Login: React.FC = () => {
           Please, insert your information to access your tasks.
         </Text>
 
-        <Text className="text-gray-600 mb-1">Email</Text>
+        {error ? (
+          <Text className="text-red-600 mb-2">{error}</Text>
+        ) : null}
+
+        <Text className="text-gray-600 mb-1">Username</Text>
         <TextInput
-          value={email}
-          onChangeText={setEmail}
-          placeholder="Insert your email"
+          value={username}
+          onChangeText={setUsername}
+          placeholder="Insert your username"
           className="w-full sm:w-[500px] lg:w-72 h-12 rounded-lg border border-gray-400 px-2 text-gray-700 mb-4"
         />
 

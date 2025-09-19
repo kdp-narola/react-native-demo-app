@@ -1,4 +1,3 @@
-// app/_layout.tsx
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { config } from "@gluestack-ui/config";
 import { GluestackUIProvider } from "@gluestack-ui/themed";
@@ -13,7 +12,10 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { ActivityIndicator, View } from "react-native";
 import "../global.css";
+import { AddContextProvider } from "./Contexts/addContext";
 import { AuthProvider } from "./Contexts/authContext";
+import { DeleteContextProvider } from "./Contexts/deleteContext";
+import { TaskListContextProvider } from "./Contexts/taskListContext";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -33,11 +35,17 @@ export default function RootLayout() {
     <AuthProvider>
       <GluestackUIProvider config={config}>
         <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="login" />
-            <Stack.Screen name="+not-found" />
-          </Stack>
+          <TaskListContextProvider>
+            <DeleteContextProvider>
+              <AddContextProvider>
+                <Stack screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name="(tabs)" />
+                  <Stack.Screen name="login" />
+                  <Stack.Screen name="+not-found" />
+                </Stack>
+              </AddContextProvider>
+            </DeleteContextProvider>
+          </TaskListContextProvider>
           <StatusBar style="auto" />
         </ThemeProvider>
       </GluestackUIProvider>

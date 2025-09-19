@@ -3,34 +3,34 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, ReactNode, useEffect, useState } from "react";
 
 export type AuthType = {
-  userData: { email?: string } | null;
-  setUserData: (data: { email?: string } | null) => void;
+  userData: { username?: string } | null;
+  setUserData: (data: { username?: string } | null) => void;
 };
 
 const AuthContext = createContext<AuthType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [userData, setUserDataState] = useState<{ email?: string } | null>(null);
+  const [userData, setUserDataState] = useState<{ username?: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
   // load persisted login
   useEffect(() => {
     (async () => {
-      const storedEmail = await AsyncStorage.getItem("userEmail");
+      const storedEmail = await AsyncStorage.getItem("username");
       if (storedEmail) {
-        setUserDataState({ email: storedEmail });
+        setUserDataState({ username: storedEmail });
       }
       setLoading(false);
     })();
   }, []);
 
-  const setUserData = async (data: { email?: string } | null) => {
+  const setUserData = async (data: { username?: string } | null) => {
     setUserDataState(data);
-    if (data?.email) {
-      await AsyncStorage.setItem("userEmail", data.email);
+    if (data?.username) {
+      await AsyncStorage.setItem("username", data.username);
       await AsyncStorage.setItem("isLoggedIn", "true");
     } else {
-      await AsyncStorage.removeItem("userEmail");
+      await AsyncStorage.removeItem("username");
       await AsyncStorage.removeItem("isLoggedIn");
     }
   };
