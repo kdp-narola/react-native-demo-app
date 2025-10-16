@@ -1,5 +1,5 @@
-import React, {useState, createContext, ReactNode} from "react";
-import { TaskProps, TaskListType } from "./taskType";
+import React, { createContext, useState } from "react";
+import { TaskListType, TaskProps } from "./taskType";
 
 interface ChildrenProps {
     children: React.ReactNode;
@@ -39,7 +39,6 @@ export const TaskListContextProvider: React.FC<ChildrenProps> = ({children}) =>{
     
         taskList.push(task)
         setTaskList([...taskList]);
-        console.log(taskList)
         setNotDoneTasks([...notDoneTasks, task]);
 
         
@@ -60,7 +59,6 @@ export const TaskListContextProvider: React.FC<ChildrenProps> = ({children}) =>{
         const index = taskList.findIndex((task:TaskProps)=>task.id == id);
         taskList.splice(index,1);
         setTaskList([...taskList]);
-        console.log(taskList);
         setDoneTasks(taskList.filter((task:TaskProps) => task.done==true));
         setNotDoneTasks(taskList.filter((task:TaskProps) => task.done!=true));
     };

@@ -24,8 +24,6 @@ export default function CategoryScreen() {
     setSelectedCategoryDataList(tasksInCategory);
   }, [currentSlug]);
 
-  console.log('selectedCategoryDataList', selectedCategory,selectedCategoryDataList, SampleData[selectedCategory])
-
   return (
     <View style={{ flex: 1, padding: 16 }}>
       <Text style={{ fontSize: 22, fontWeight: "bold", marginBottom: 16, textTransform: 'capitalize' }}>
@@ -36,7 +34,6 @@ export default function CategoryScreen() {
         data={selectedCategoryDataList}
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => {
-          console.log("item : ",item, currentSlug, selectedCategory);
           return (
           <TaskCard
             id={item.id}
