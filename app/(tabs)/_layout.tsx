@@ -1,11 +1,11 @@
-import { Stack, Tabs, usePathname, useRouter } from "expo-router";
+import { Route, Stack, Tabs, usePathname, useRouter } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import {
-  Platform,
-  Pressable,
-  Text,
-  useWindowDimensions,
-  View,
+	Platform,
+	Pressable,
+	Text,
+	useWindowDimensions,
+	View,
 } from "react-native";
 
 import { HapticTab } from "@/components/HapticTab";
@@ -21,14 +21,27 @@ export default function TabLayout() {
 	const colorScheme = useColorScheme();
 	const { userData } = useContext(AuthContext) as AuthType;
 	const router = useRouter();
-  const pathname = usePathname();
+	const pathname = usePathname();
 	const { width } = useWindowDimensions();
-
+	const [activeRoute, setActiveRoute] = useState<string | null>(null);
+	const [selectedCategory, setSelectedCategory] = useState("None");
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 
 	useEffect(() => {
 		if (!userData) router.replace("/login");
 	}, [userData]);
+
+	useEffect(() => {
+		if (pathname) {
+			setActiveRoute(pathname);
+		}
+	}, [pathname]);
+
+	useEffect(() => {
+		if (activeRoute) {
+			router.push(activeRoute as Route);
+		}
+	}, [activeRoute]);
 
 	const isNative = Platform.OS !== "web";
 	const isMobileWeb = !isNative && width < 768;
@@ -36,17 +49,22 @@ export default function TabLayout() {
 
 	if (isDesktopWeb) {
 		return (
-			<View style={{ flex: 1, flexDirection: "row", backgroundColor: 'white' }}>
+			<View style={{ flex: 1, flexDirection: "row", backgroundColor: "white" }}>
 				<View style={{ width: "20%", height: "100%" }}>
-					<Sidebar
-						onNavigate={(route: any) => router.push(route)}
-            active={pathname}
-					/>
+					{pathname !== '/categories' &&
+						<Sidebar
+							active={activeRoute || ""}
+							onNavigate={setActiveRoute}
+							selectedCategory={selectedCategory}
+							onCategorySelect={setSelectedCategory}
+							setSidebarOpen={setSidebarOpen}
+						/>
+					}
 				</View>
 				<View style={{ flex: 1, width: "80%" }}>
 					<Stack screenOptions={{ headerShown: false }}>
 						<Stack.Screen name="tasks" />
-						<Stack.Screen name="categories" />
+						<Stack.Screen name="categories" options={{ headerTitle: "Categories" }} />
 						<Stack.Screen name="settings" />
 					</Stack>
 				</View>
@@ -56,7 +74,7 @@ export default function TabLayout() {
 
 	if (isMobileWeb) {
 		return (
-			<View style={{ flex: 1, flexDirection: "row", backgroundColor: 'white' }}>
+			<View style={{ flex: 1, flexDirection: "row", backgroundColor: "white" }}>
 				<View
 					style={{
 						width: "10%",
@@ -87,20 +105,26 @@ export default function TabLayout() {
 							zIndex: 10,
 						}}
 					>
-						<Sidebar
-							onNavigate={(route: any) => {
-								router.push(route);
-								setSidebarOpen(false);
-							}}
-              active={pathname}
-						/>
+						{pathname !== '/categories' &&
+							<Sidebar
+								active={activeRoute || ""}
+								onNavigate={(route: string) => {
+									setActiveRoute(route);
+									setSidebarOpen(false);
+								}}
+								setSidebarOpen={setSidebarOpen}
+								selectedCategory={selectedCategory}
+								onCategorySelect={setSelectedCategory}
+							/> 
+						}
 					</View>
 				)}
 
 				<View style={{ flex: 1, width: "90%" }}>
 					<Stack screenOptions={{ headerShown: false }}>
 						<Stack.Screen name="tasks" />
-						<Stack.Screen name="categories" />
+						<Stack.Screen name="categories" options={{ headerTitle: "Categories" }} />
+						<Stack.Screen name="categories/[slug]" options={{ headerTitle: "Category" }} />
 						<Stack.Screen name="settings" />
 					</Stack>
 				</View>
@@ -109,7 +133,10 @@ export default function TabLayout() {
 	}
 
 	return (
-		<SafeAreaView style={{ flex: 1, backgroundColor: 'white' }} edges={["top", "left", "right"]}>
+		<SafeAreaView
+			style={{ flex: 1, backgroundColor: "white" }}
+			edges={["top", "left", "right"]}
+		>
 			<Tabs
 				screenOptions={{
 					tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
@@ -123,11 +150,7 @@ export default function TabLayout() {
 					options={{
 						title: "Tasks",
 						tabBarIcon: ({ color }) => (
-							<Ionicons 
-								size={28}
-								name="checkmark-circle"
-								color={color}
-							/>
+							<Ionicons size={28} name="checkmark-circle" color={color} />
 						),
 					}}
 				/>
@@ -136,7 +159,7 @@ export default function TabLayout() {
 					options={{
 						title: "Categories",
 						tabBarIcon: ({ color }) => (
-							<Ionicons  size={28} name="folder" color={color} />
+							<Ionicons size={28} name="folder" color={color} />
 						),
 					}}
 				/>
@@ -145,16 +168,16 @@ export default function TabLayout() {
 					options={{
 						title: "Settings",
 						tabBarIcon: ({ color }) => (
-							<Ionicons  size={28} name="settings" color={color} />
+							<Ionicons size={28} name="settings" color={color} />
 						),
 					}}
 				/>
-        <Tabs.Screen
+				<Tabs.Screen
 					name="logout"
 					options={{
 						title: "Logout",
 						tabBarIcon: ({ color }) => (
-							<Ionicons  size={28} name="log-out" color={color} />
+							<Ionicons size={28} name="log-out" color={color} />
 						),
 					}}
 				/>

@@ -39,7 +39,6 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   text: {
-    color: "#ccc",
     fontSize: 20,
     fontWeight: "400",
     marginLeft: 16,

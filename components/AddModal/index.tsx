@@ -64,7 +64,7 @@ const AddModal: React.FC = () => {
               onValueChange={(value: any) => setTaskCat(value)}
               style={styles.picker}
             >
-              {categList.map((cat, index) => (
+              {categList?.map((cat, index) => (
                 <Picker.Item
                   key={cat.id}
                   label={cat.name}

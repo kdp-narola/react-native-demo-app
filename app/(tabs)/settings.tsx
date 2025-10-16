@@ -144,6 +144,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: "#ddd",
     marginBottom: 16,
+    overflow: 'scroll',
   },
   tab: {
     paddingVertical: 10,
