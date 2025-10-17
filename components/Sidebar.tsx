@@ -1,15 +1,15 @@
-import { Categories, getCategoryByColor, getCategoryColor, Items } from "@/data/Tasks";
+import { Categories, getCategoryColor, Items } from "@/data/Tasks";
 import React, { useState } from "react";
 import {
   Image,
-  Modal,
   Platform,
   ScrollView,
   Text,
   TouchableOpacity,
   useWindowDimensions,
-  View,
+  View
 } from "react-native";
+import CategoryDrawer from "./CategoryDrawer";
 
 type SidebarProps = {
   active: string;
@@ -23,115 +23,6 @@ const logoutItem = {
   name: "Logout",
   route: "/logout",
   icon: require("../Img/logout.svg"),
-};
-
-const CategoryDrawer = ({
-  visible,
-  onClose,
-  selectedCategory,
-  onCategorySelect,
-  onNavigate,
-}: {
-  visible: boolean;
-  onClose: () => void;
-  selectedCategory?: string;
-  onCategorySelect?: (category: string) => void;
-  onNavigate: (route: string) => void;
-}) => {
-  return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      transparent={true}
-      onRequestClose={onClose}
-    >
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          justifyContent: "flex-end",
-        }}
-      >
-        <View
-          style={{
-            backgroundColor: "white",
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            maxHeight: "70%",
-            paddingBottom: 20,
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: 20,
-              borderBottomWidth: 1,
-              borderBottomColor: "#E5E7EB",
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: "600",
-                color: "#374151",
-              }}
-            >
-              Select Category
-            </Text>
-            <TouchableOpacity onPress={onClose}>
-              <Text style={{ fontSize: 18, color: "#6B7280" }}>✕</Text>
-            </TouchableOpacity>
-          </View>
-
-          <ScrollView style={{ padding: 20 }}>
-            {Categories.map((category, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  onCategorySelect?.(category.name);
-                  onClose();
-                  onNavigate(`/categories/${category.name.toLowerCase().replace(/\s+/g, "-")}`)
-                }}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  paddingVertical: 16,
-                  paddingHorizontal: 16,
-                  marginBottom: 8,
-                  borderRadius: 12,
-                  backgroundColor:
-                    selectedCategory === category.name ? "#EBF8FF" : "#F9FAFB",
-                  borderLeftWidth: selectedCategory === category.name ? 4 : 0,
-                  borderLeftColor: "#3B82F6",
-                }}
-              >
-                <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
-                  <View
-                    style={{
-                      width: 16,
-                      height: 16,
-                      borderRadius: 8,
-                      backgroundColor: getCategoryByColor(category.name),
-                      marginRight: 16,
-                    }}
-                  />
-                  <Text style={{ fontSize: 16, color: "#374151", flex: 1 }}>
-                    {category.name}
-                  </Text>
-                </View>
-                <Text style={{ fontSize: 14, color: "#9CA3AF" }}>
-                  {category.count}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      </View>
-    </Modal>
-  );
 };
 
 export default function Sidebar({

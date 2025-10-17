@@ -10,11 +10,11 @@ import TaskCard from "@/components/TaskCard";
 import { getCategoryByColor, SampleData } from "@/data/Tasks";
 import React, { useContext, useState } from "react";
 import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+	FlatList,
+	StyleSheet,
+	Text,
+	TouchableOpacity,
+	View,
 } from "react-native";
 
 type ListFilter = "all" | "done" | "notDone";
@@ -95,7 +95,7 @@ export default function TasksScreen({ category = "None" }: TasksScreenProps) {
 							id={item.id}
 							name={item.title}
 							list={taskCategory}
-              color={getCategoryByColor(taskCategory)}
+              				color={getCategoryByColor(taskCategory)}
 							done={item.completed}
 						/>
 					);

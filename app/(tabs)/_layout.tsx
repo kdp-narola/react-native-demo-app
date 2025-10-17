@@ -4,10 +4,12 @@ import {
 	Platform,
 	Pressable,
 	Text,
+	TouchableOpacity,
 	useWindowDimensions,
 	View,
 } from "react-native";
 
+import CategoryDrawer from "@/components/CategoryDrawer";
 import { HapticTab } from "@/components/HapticTab";
 import Sidebar from "@/components/Sidebar";
 import TabBarBackground from "@/components/ui/TabBarBackground";
@@ -26,22 +28,26 @@ export default function TabLayout() {
 	const [activeRoute, setActiveRoute] = useState<string | null>(null);
 	const [selectedCategory, setSelectedCategory] = useState("None");
 	const [sidebarOpen, setSidebarOpen] = useState(false);
-
+	const [showCategoryDrawer, setShowCategoryDrawer] = useState(false);
+  
 	useEffect(() => {
-		if (!userData) router.replace("/login");
+		if (!userData && pathname !== '/login') {
+			router.replace('/login');
+		}
 	}, [userData]);
 
 	useEffect(() => {
-		if (pathname) {
+		if (pathname && pathname !== activeRoute) {
 			setActiveRoute(pathname);
 		}
 	}, [pathname]);
 
-	useEffect(() => {
-		if (activeRoute) {
-			router.push(activeRoute as Route);
+	const handleNavigate = (route: string) => {
+		if (route !== pathname) {
+			setActiveRoute(route);
+			router.push(route as Route);
 		}
-	}, [activeRoute]);
+	};
 
 	const isNative = Platform.OS !== "web";
 	const isMobileWeb = !isNative && width < 768;
@@ -54,7 +60,7 @@ export default function TabLayout() {
 					{pathname !== '/categories' &&
 						<Sidebar
 							active={activeRoute || ""}
-							onNavigate={setActiveRoute}
+							onNavigate={handleNavigate}
 							selectedCategory={selectedCategory}
 							onCategorySelect={setSelectedCategory}
 							setSidebarOpen={setSidebarOpen}
@@ -109,8 +115,8 @@ export default function TabLayout() {
 							<Sidebar
 								active={activeRoute || ""}
 								onNavigate={(route: string) => {
-									setActiveRoute(route);
 									setSidebarOpen(false);
+									handleNavigate(route);
 								}}
 								setSidebarOpen={setSidebarOpen}
 								selectedCategory={selectedCategory}
@@ -137,6 +143,16 @@ export default function TabLayout() {
 			style={{ flex: 1, backgroundColor: "white" }}
 			edges={["top", "left", "right"]}
 		>
+			<CategoryDrawer
+				visible={showCategoryDrawer}
+				onClose={() => setShowCategoryDrawer(false)}
+				selectedCategory={selectedCategory}
+				onCategorySelect={(cat) => setSelectedCategory(cat)}
+				onNavigate={(route) => {
+					setShowCategoryDrawer(false);
+					router.push(route as Route);
+				}}
+			/>
 			<Tabs
 				screenOptions={{
 					tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
@@ -158,9 +174,22 @@ export default function TabLayout() {
 					name="categories"
 					options={{
 						title: "Categories",
-						tabBarIcon: ({ color }) => (
-							<Ionicons size={28} name="folder" color={color} />
-						),
+						tabBarIcon: ({ color }) => <Ionicons name="folder" size={28} color={color} />,
+						tabBarButton: (props) => {
+						const { delayLongPress, ...rest } = props as any;
+						return (
+							<TouchableOpacity
+							{...rest}
+							onPress={() => {
+								if (isNative) {
+								setShowCategoryDrawer(true);
+								} else {
+								router.push("/categories");
+								}
+							}}
+							/>
+						);
+						},
 					}}
 				/>
 				<Tabs.Screen

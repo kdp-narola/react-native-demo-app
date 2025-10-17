@@ -22,7 +22,7 @@ const AddModal: React.FC = () => {
 
   const [taskName, setTaskName] = useState("");
   const [taskCat, setTaskCat] = useState(
-    categList.findIndex((cat) => cat.name === "None")
+    categList?.findIndex((cat) => cat.name === "None")
   );
 
   function handleCancel() {
@@ -35,8 +35,8 @@ const AddModal: React.FC = () => {
     const newTask: TaskProps = {
       id: Math.random(),
       title: taskName,
-      categorie: categList[taskCat].name,
-      color: categList[taskCat].color,
+      categorie: categList?.[taskCat]?.name,
+      color: categList?.[taskCat]?.color,
       done: false,
     };
 
