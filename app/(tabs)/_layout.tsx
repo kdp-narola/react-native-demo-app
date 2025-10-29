@@ -1,14 +1,3 @@
-import { Route, Stack, Tabs, usePathname, useRouter } from "expo-router";
-import React, { useContext, useEffect, useState } from "react";
-import {
-	Platform,
-	Pressable,
-	Text,
-	TouchableOpacity,
-	useWindowDimensions,
-	View,
-} from "react-native";
-
 import CategoryDrawer from "@/components/CategoryDrawer";
 import { HapticTab } from "@/components/HapticTab";
 import Sidebar from "@/components/Sidebar";
@@ -16,6 +5,10 @@ import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Route, Stack, Tabs, usePathname, useRouter } from "expo-router";
+import React, { useContext, useEffect, useState } from "react";
+import { Platform, useWindowDimensions, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AuthContext, { AuthType } from "../Contexts/authContext";
 
@@ -25,52 +18,47 @@ export default function TabLayout() {
 	const router = useRouter();
 	const pathname = usePathname();
 	const { width } = useWindowDimensions();
-	const [activeRoute, setActiveRoute] = useState<string | null>(null);
-	const [selectedCategory, setSelectedCategory] = useState("None");
-	const [sidebarOpen, setSidebarOpen] = useState(false);
+	const [selectedCategory, setSelectedCategory] = useState<string>("none");
 	const [showCategoryDrawer, setShowCategoryDrawer] = useState(false);
-  
+
+	const isNative =
+		Platform.OS !== "web" || (Platform.OS === "web" && width < 768);
+
 	useEffect(() => {
-		if (!userData && pathname !== '/login') {
-			router.replace('/login');
+		if (!userData && pathname !== "/login") {
+			router.replace("/login");
 		}
 	}, [userData]);
 
 	useEffect(() => {
-		if (pathname && pathname !== activeRoute) {
-			setActiveRoute(pathname);
-		}
-	}, [pathname]);
+		const loadCategory = async () => {
+			const saved = await AsyncStorage.getItem("selectedCategory");
+			if (saved) {
+				setSelectedCategory(saved);
+			}
+		};
+		loadCategory();
+	}, []);
 
 	const handleNavigate = (route: string) => {
-		if (route !== pathname) {
-			setActiveRoute(route);
-			router.push(route as Route);
-		}
+		if (route !== pathname) router.push(route as Route);
 	};
 
-	const isNative = Platform.OS !== "web";
-	const isMobileWeb = !isNative && width < 768;
-	const isDesktopWeb = !isNative && width >= 768;
-
-	if (isDesktopWeb) {
+	if (!isNative) {
+		// 🖥️ Web layout: sidebar + content
 		return (
 			<View style={{ flex: 1, flexDirection: "row", backgroundColor: "white" }}>
 				<View style={{ width: "20%", height: "100%" }}>
-					{pathname !== '/categories' &&
-						<Sidebar
-							active={activeRoute || ""}
-							onNavigate={handleNavigate}
-							selectedCategory={selectedCategory}
-							onCategorySelect={setSelectedCategory}
-							setSidebarOpen={setSidebarOpen}
-						/>
-					}
+					<Sidebar
+						onNavigate={handleNavigate}
+						selectedCategory={selectedCategory}
+						onCategorySelect={setSelectedCategory}
+					/>
 				</View>
 				<View style={{ flex: 1, width: "80%" }}>
 					<Stack screenOptions={{ headerShown: false }}>
 						<Stack.Screen name="tasks" />
-						<Stack.Screen name="categories" options={{ headerTitle: "Categories" }} />
+						<Stack.Screen name="categories" />
 						<Stack.Screen name="settings" />
 					</Stack>
 				</View>
@@ -78,81 +66,23 @@ export default function TabLayout() {
 		);
 	}
 
-	if (isMobileWeb) {
-		return (
-			<View style={{ flex: 1, flexDirection: "row", backgroundColor: "white" }}>
-				<View
-					style={{
-						width: "10%",
-						height: "100%",
-						alignItems: "center",
-						borderRightWidth: 1,
-						borderColor: "#ddd",
-						paddingTop: 16,
-					}}
-				>
-					<Pressable onPress={() => setSidebarOpen(!sidebarOpen)}>
-						<Text style={{ fontSize: 20 }}>☰</Text>
-					</Pressable>
-				</View>
-
-				{sidebarOpen && (
-					<View
-						style={{
-							position: "absolute",
-							top: 0,
-							left: 0,
-							width: "70%",
-							height: "100%",
-							shadowColor: "#000",
-							shadowOpacity: 0.2,
-							shadowRadius: 5,
-							elevation: 5,
-							zIndex: 10,
-						}}
-					>
-						{pathname !== '/categories' &&
-							<Sidebar
-								active={activeRoute || ""}
-								onNavigate={(route: string) => {
-									setSidebarOpen(false);
-									handleNavigate(route);
-								}}
-								setSidebarOpen={setSidebarOpen}
-								selectedCategory={selectedCategory}
-								onCategorySelect={setSelectedCategory}
-							/> 
-						}
-					</View>
-				)}
-
-				<View style={{ flex: 1, width: "90%" }}>
-					<Stack screenOptions={{ headerShown: false }}>
-						<Stack.Screen name="tasks" />
-						<Stack.Screen name="categories" options={{ headerTitle: "Categories" }} />
-						<Stack.Screen name="categories/[slug]" options={{ headerTitle: "Category" }} />
-						<Stack.Screen name="settings" />
-					</Stack>
-				</View>
-			</View>
-		);
-	}
-
+	// 📱 Native layout: Tabs + Drawer
 	return (
-		<SafeAreaView
-			style={{ flex: 1, backgroundColor: "white" }}
-			edges={["top", "left", "right"]}
-		>
+		<SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
 			<CategoryDrawer
 				visible={showCategoryDrawer}
 				onClose={() => setShowCategoryDrawer(false)}
 				selectedCategory={selectedCategory}
-				onCategorySelect={(cat) => setSelectedCategory(cat)}
-				onNavigate={(route) => {
+				onCategorySelect={async (cat) => {
+					await AsyncStorage.setItem("selectedCategory", cat);
+					setSelectedCategory(cat);
 					setShowCategoryDrawer(false);
-					router.push(route as Route);
+					if (!pathname.includes(`/categories/${cat}`)) {
+						router.push(`/categories/${cat}`);
+					}
 				}}
 			/>
+
 			<Tabs
 				screenOptions={{
 					tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
@@ -174,21 +104,20 @@ export default function TabLayout() {
 					name="categories"
 					options={{
 						title: "Categories",
-						tabBarIcon: ({ color }) => <Ionicons name="folder" size={28} color={color} />,
-						tabBarButton: (props) => {
-						const { delayLongPress, ...rest } = props as any;
-						return (
-							<TouchableOpacity
-							{...rest}
-							onPress={() => {
-								if (isNative) {
+						tabBarIcon: ({ color }) => (
+							<Ionicons size={28} name="folder" color={color} />
+						),
+					}}
+					listeners={{
+						tabPress: (e) => {
+							// 🧱 Prevent default tab navigation
+							e.preventDefault();
+
+							if (isNative) {
 								setShowCategoryDrawer(true);
-								} else {
+							} else if (!pathname.startsWith("/categories")) {
 								router.push("/categories");
-								}
-							}}
-							/>
-						);
+							}
 						},
 					}}
 				/>

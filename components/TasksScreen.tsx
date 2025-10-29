@@ -60,7 +60,7 @@ export default function TasksScreen({ category = "None" }: TasksScreenProps) {
 	return (
 		<View style={styles.container}>
 			<View style={styles.headerRow}>
-				<Text style={styles.header}>Tasks - {category}</Text>
+				<Text style={styles.header}>Tasks</Text>
 			</View>
 
 			<View style={[styles.titleAndFilter, , { zIndex: 10 }]}>
