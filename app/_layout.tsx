@@ -1,10 +1,8 @@
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { config } from "@gluestack-ui/config";
-import { GluestackUIProvider } from "@gluestack-ui/themed";
 import {
-	DarkTheme,
-	DefaultTheme,
-	ThemeProvider,
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
@@ -33,22 +31,20 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <GluestackUIProvider config={config}>
-        <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-          <TaskListContextProvider>
-            <DeleteContextProvider>
-              <AddContextProvider>
-                <Stack screenOptions={{ headerShown: false }}>
-                  <Stack.Screen name="(tabs)" />
-                  <Stack.Screen name="login" />
-                  <Stack.Screen name="+not-found" />
-                </Stack>
-              </AddContextProvider>
-            </DeleteContextProvider>
-          </TaskListContextProvider>
-          <StatusBar style="auto" />
-        </ThemeProvider>
-      </GluestackUIProvider>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <TaskListContextProvider>
+          <DeleteContextProvider>
+            <AddContextProvider>
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="login" />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+            </AddContextProvider>
+          </DeleteContextProvider>
+        </TaskListContextProvider>
+        <StatusBar style="auto" />
+      </ThemeProvider>
     </AuthProvider>
   );
 }

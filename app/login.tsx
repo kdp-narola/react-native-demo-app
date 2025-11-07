@@ -40,7 +40,7 @@ const Login: React.FC = () => {
 
       <View className="w-full h-full flex flex-col justify-center items-start sm:min-w-[500px] sm:max-w-[500px] lg:min-w-[400px] lg:max-w-[400px] mx-auto">
         <Text className="text-4xl font-bold text-gray-800 mb-3">
-          Welcome to Tasker
+          Welcome to Tasker 123
         </Text>
         <Text className="text-base text-gray-500 mb-6">
           Please, insert your information to access your tasks.
