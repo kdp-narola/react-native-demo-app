@@ -1,44 +1,122 @@
+import api from "@/src/api/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { createContext, ReactNode, useEffect, useState } from "react";
+import { AxiosError } from "axios";
+import { createContext, ReactNode, useEffect, useState } from "react";
 
-export type AuthType = {
-  userData: { email?: string } | null;
-  setUserData: (data: { email?: string } | null) => void;
-};
+export interface User {
+  id?: string;
+  username?: string;
+  email?: string;
+  token?: string;
+}
 
-const AuthContext = createContext<AuthType | null>(null);
+export interface AuthContextType {
+  user: User | null;
+  setUser: (user: User | null) => void;
+  token: string | null;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  signup: (data: { username: string; email: string; password: string }) => Promise<void>;
+  logout: () => Promise<void>;
+  refreshUser: () => Promise<void>; // 👈 new helper to call /auth/me manually if needed
+}
+
+export const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [userData, setUserDataState] = useState<{ email?: string } | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // load persisted login
   useEffect(() => {
     (async () => {
-      const storedEmail = await AsyncStorage.getItem("email");
-      if (storedEmail) {
-        setUserDataState({ email: storedEmail });
+      try {
+        const savedToken = await AsyncStorage.getItem("token");
+        if (savedToken) {
+          api.defaults.headers.common["Authorization"] = `Bearer ${savedToken}`;
+          setToken(savedToken);
+          await fetchUser();
+        }
+      } catch (err) {
+        console.log("Failed to fetch user:", err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     })();
   }, []);
 
-  const setUserData = async (data: { email?: string } | null) => {
-    setUserDataState(data);
-    if (data?.email) {
-      await AsyncStorage.setItem("email", data.email);
-      await AsyncStorage.setItem("isLoggedIn", "true");
-    } else {
-      await AsyncStorage.removeItem("email");
-      await AsyncStorage.removeItem("isLoggedIn");
+  const fetchUser = async () => {
+    try {
+      const response = await api.get("/auth/me");
+      setUser(response.data?.user);
+      await AsyncStorage.setItem("user", JSON.stringify(response.data?.user));
+    } catch (err) {
+      console.log("Failed to fetch user:", err);
+      await logout();
     }
   };
 
+  const refreshUser = async () => {
+    await fetchUser();
+  };
+
+  const login = async (email: string, password: string) => {
+    const response = await api.post("/auth/login", { email, password });
+    const { token } = response.data?.user;
+
+    setToken(token);
+    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    await AsyncStorage.setItem("token", token);
+
+    await fetchUser();
+  };
+
+  const signup = async (data: { username: string; email: string; password: string }) => {
+    const response = await api.post("/auth/register", data);
+    const { token } = response.data?.user;
+
+    setToken(token);
+    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    await AsyncStorage.setItem("token", token);
+
+    await fetchUser();
+  };
+
+  const logout = async () => {
+    setToken(null);
+    setUser(null);
+    delete api.defaults.headers.common["Authorization"];
+    await AsyncStorage.multiRemove(["token", "user", "selectedCategory"]);
+  };
+
+  useEffect(() => {
+    const interceptor = api.interceptors.response.use(
+      (res) => res,
+      async (error: AxiosError) => {
+        if (error.response?.status === 401) {
+          await logout();
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => api.interceptors.response.eject(interceptor);
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ userData, setUserData }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        setUser,
+        token,
+        loading,
+        login,
+        signup,
+        logout,
+        refreshUser,
+      }}
+    >
       {!loading && children}
     </AuthContext.Provider>
   );
 };
-
-export default AuthContext;

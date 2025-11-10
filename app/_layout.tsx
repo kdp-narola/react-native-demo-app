@@ -7,7 +7,6 @@ import {
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React from "react";
 import { ActivityIndicator, View } from "react-native";
 import "../global.css";
 import { AddContextProvider } from "./Contexts/addContext";

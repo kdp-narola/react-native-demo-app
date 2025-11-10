@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import {
   Button,
   SafeAreaView,
@@ -7,30 +7,23 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
-import AuthContext, { AuthType } from "../Contexts/authContext";
+import { AuthContext, AuthContextType } from "../Contexts/authContext";
 
 const tabs = ["Profile", "Preferences", "Account", "About"];
 
 export default function SettingsScreen() {
   const [activeTab, setActiveTab] = useState("Profile");
-  const { userData, setUserData } = useContext(AuthContext) as AuthType;
-
+  const { user, logout } = useContext(AuthContext) as AuthContextType;
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(true);
-
-  const [email, setEmail] = useState(userData?.email || "");
-
-  const handleSaveProfile = () => {
-    setUserData({ ...userData, email });
-    alert("Profile updated!");
-  };
+  const [email, setEmail] = useState(user?.email || "");
 
   const handleLogout = async () => {
-    await setUserData(null);
-    alert("Logged out!");
-  };
+    await logout();
+    alert("You have been logged out successfully!");
+  }
 
   const renderContent = () => {
     switch (activeTab) {
@@ -44,8 +37,9 @@ export default function SettingsScreen() {
               onChangeText={setEmail}
               placeholder="Enter email"
               keyboardType="email-address"
+              autoCapitalize="none"
             />
-            <Button title="Save" onPress={handleSaveProfile} />
+            <Button title="Save" color="#7f56da" />
           </View>
         );
 
@@ -77,8 +71,13 @@ export default function SettingsScreen() {
             <Text style={styles.infoText}>
               Manage your account and security settings.
             </Text>
-            <Button title="Change Password" onPress={() => alert("Change Password flow")} />
-            <View style={{ height: 12 }} />
+            <View style={{ marginVertical: 10 }}>
+              <Button
+                title="Change Password"
+                onPress={() => alert("Change Password flow")}
+                color="#7f56da"
+              />
+            </View>
             <Button title="Logout" onPress={handleLogout} color="red" />
           </View>
         );

@@ -7,14 +7,14 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Route, Stack, Tabs, usePathname, useRouter } from "expo-router";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Platform, useWindowDimensions, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AuthContext, { AuthType } from "../Contexts/authContext";
+import { AuthContext, AuthContextType } from "../Contexts/authContext";
 
 export default function TabLayout() {
 	const colorScheme = useColorScheme();
-	const { userData } = useContext(AuthContext) as AuthType;
+	const { user } = useContext(AuthContext) as AuthContextType;
 	const router = useRouter();
 	const pathname = usePathname();
 	const { width } = useWindowDimensions();
@@ -25,10 +25,10 @@ export default function TabLayout() {
 		Platform.OS !== "web" || (Platform.OS === "web" && width < 768);
 
 	useEffect(() => {
-		if (!userData && pathname !== "/login") {
+		if (!user && pathname !== "/login") {
 			router.replace("/login");
 		}
-	}, [userData]);
+	}, [user]);
 
 	useEffect(() => {
 		const loadCategory = async () => {

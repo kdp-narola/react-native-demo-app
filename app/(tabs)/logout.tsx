@@ -1,29 +1,23 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
-
-import AuthContext, { AuthType } from "../Contexts/authContext";
+import { AuthContext, AuthContextType } from "../Contexts/authContext";
 
 export default function LogoutScreen() {
-  const { setUserData } = useContext(AuthContext) as AuthType;
+  const { logout } = useContext(AuthContext) as AuthContextType;
   const router = useRouter();
 
   useEffect(() => {
-    const logout = async () => {
+    const performLogout = async () => {
       try {
-        await AsyncStorage.removeItem("email");
-        await AsyncStorage.removeItem("isLoggedIn");
-
-        setUserData(null);
-
+        await logout();
         router.replace("/login");
       } catch (err) {
         console.error("Logout error:", err);
       }
     };
 
-    logout();
+    performLogout();
   }, []);
 
   return (

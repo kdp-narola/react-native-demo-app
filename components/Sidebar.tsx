@@ -1,27 +1,22 @@
 import { Categories, getCategoryColor, Items } from "@/data/Tasks";
+import { useAuth } from "@/hooks/useAuth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { usePathname, useRouter } from "expo-router";
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import {
-  Image,
-  Platform,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  useWindowDimensions,
-  View,
+	Image,
+	Platform,
+	ScrollView,
+	Text,
+	TouchableOpacity,
+	useWindowDimensions,
+	View,
 } from "react-native";
 
 type SidebarProps = {
 	onNavigate: (route: string) => void;
 	selectedCategory?: string;
 	onCategorySelect?: (category: string) => void;
-};
-
-const logoutItem = {
-	name: "Logout",
-	route: "/logout",
-	icon: require("../Img/logout.svg"),
 };
 
 export default function Sidebar({
@@ -36,6 +31,7 @@ export default function Sidebar({
 	const isNative =
 		Platform.OS !== "web" || (Platform.OS === "web" && width < 768);
 	const isCategoryRoute = pathname.startsWith("/categories");
+	const { user, logout } = useAuth();
 
 	const handleCategoriesPress = useCallback(async () => {
 		if (isCategoryRoute) {
@@ -54,6 +50,11 @@ export default function Sidebar({
 		},
 		[onCategorySelect]
 	);
+
+	const handleLogout = async () => {
+		await logout();
+		router.replace("/login");
+	};
 
 	return (
 		<View
@@ -80,6 +81,18 @@ export default function Sidebar({
 						resizeMode="contain"
 					/>
 				</View>
+
+				<Text
+					style={{
+						fontSize: 16,
+						fontWeight: "600",
+						color: "#444",
+						paddingHorizontal: 16,
+						marginBottom: 16,
+					}}
+				>
+					Welcome, {user?.username || "User"}!
+				</Text>
 
 				{Items.map((item) => (
 					<View key={item.route}>
@@ -196,7 +209,7 @@ export default function Sidebar({
 			</ScrollView>
 
 			<TouchableOpacity
-				onPress={() => onNavigate(logoutItem.route)}
+				onPress={handleLogout}
 				style={{
 					flexDirection: "row",
 					alignItems: "center",
@@ -205,10 +218,10 @@ export default function Sidebar({
 				}}
 			>
 				<Image
-					source={logoutItem.icon}
+					source={require("../Img/logout.svg")}
 					style={{ width: 22, height: 22, marginRight: 12, tintColor: "#888" }}
 				/>
-				<Text style={{ fontSize: 16, color: "#555" }}>{logoutItem.name}</Text>
+				<Text style={{ fontSize: 16, color: "#555" }}>Logout</Text>
 			</TouchableOpacity>
 		</View>
 	);

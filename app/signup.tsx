@@ -1,33 +1,29 @@
 import { useRouter } from "expo-router";
-import React, { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
-import AuthContext, { AuthType } from "./Contexts/authContext";
+import { useAuth } from "../hooks/useAuth";
 
 const Signup: React.FC = () => {
-  const { setUserData, userData } = useContext(AuthContext) as AuthType;
+  const { signup } = useAuth();
   const router = useRouter();
+
+  const [username, setUsername] = useState("")
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (userData) router.replace("/(tabs)/tasks");
-  }, [userData]);
-
-  const handleSignup = () => {
-    if (!email || !password) {
-      setError("Please enter a email and password");
-      return;
+  const handleSignup = async () => {
+    try {
+      if (!email || !password) {
+        setError("Please enter a email and password");
+        return;
+      }
+      await signup({ username, email, password });
+      setError("");
+      router.push("/tasks");
+    } catch (err: any) {
+      setError(`Signup failed ${err.response?.data?.error || "Something went wrong"}`);
     }
-
-    // TODO: API call here and set userData in context
-    // if (email === "admin" && password === "1234") {
-    //   setUserData({ email });
-    //   setError("");
-    // } else {
-    //   setError("Invalid email or password");
-    // }
   };
 
   return (
@@ -51,8 +47,18 @@ const Signup: React.FC = () => {
           <Text className="text-red-600 mb-2">{error}</Text>
         ) : null}
 
+        <Text className="text-gray-600 mb-1">Username</Text>
+        <TextInput
+          id="username"
+          value={username}
+          onChangeText={setUsername}
+          placeholder="Enter your username"
+          className="w-full sm:w-[500px] lg:w-72 h-12 rounded-lg border border-gray-400 px-2 text-gray-700 mb-4"
+        />
+
         <Text className="text-gray-600 mb-1">Email</Text>
         <TextInput
+          id="email"
           value={email}
           onChangeText={setEmail}
           placeholder="Enter your email"
@@ -61,24 +67,13 @@ const Signup: React.FC = () => {
 
         <Text className="text-gray-600 mb-1">Password</Text>
         <TextInput
+          id="password"
           value={password}
           onChangeText={setPassword}
           placeholder="Create a password"
           secureTextEntry
           className="w-full sm:w-[500px] lg:w-72 h-12 rounded-lg border border-gray-400 px-2 text-gray-700 mb-4"
         />
-
-        <TouchableOpacity
-          className="flex-row items-center mb-4"
-          onPress={() => setRemember(!remember)}
-        >
-          <View
-            className={`w-4 h-4 border border-gray-700 mr-2 rounded ${
-              remember ? "bg-[#7f56da]" : "bg-white"
-            }`}
-          />
-          <Text className="text-gray-500">Remember me</Text>
-        </TouchableOpacity>
 
         <TouchableOpacity
           onPress={handleSignup}

@@ -1,31 +1,26 @@
 import { useRouter } from "expo-router";
-import React, { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
-import AuthContext, { AuthType } from "./Contexts/authContext";
+import { useAuth } from "../hooks/useAuth";
 
 const Login: React.FC = () => {
-  const { setUserData, userData } = useContext(AuthContext) as AuthType;
+  const { login } = useAuth();
   const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (userData) router.replace("/(tabs)/tasks");
-  }, [userData]);
-
-  const handleLogin = () => {
-    if (!email || !password) {
-      setError("Please enter email and password");
-      return;
-    }
-
-    if (email === "admin@gmail.com" && password === "1234") {
-      setUserData({ email });
+  const handleLogin = async () => {
+    try {
+      if (!email || !password) {
+        setError("Please enter email and password");
+        return;
+      }
+      await login(email, password);
       setError("");
-    } else {
-      setError("Invalid email or password");
+      router.push("/tasks");
+    } catch (err: any) {
+      setError(`Login failed ${err.response?.data?.error || "Something went wrong"}`);
     }
   };
 
@@ -52,6 +47,7 @@ const Login: React.FC = () => {
 
         <Text className="text-gray-600 mb-1">Email</Text>
         <TextInput
+          id="email"
           value={email}
           onChangeText={setEmail}
           placeholder="Insert your email"
@@ -60,24 +56,13 @@ const Login: React.FC = () => {
 
         <Text className="text-gray-600 mb-1">Password</Text>
         <TextInput
+          id="password"
           value={password}
           onChangeText={setPassword}
           placeholder="Insert your password"
           secureTextEntry
           className="w-full sm:w-[500px] lg:w-72 h-12 rounded-lg border border-gray-400 px-2 text-gray-700 mb-4"
         />
-
-        <TouchableOpacity
-          className="flex-row items-center mb-4"
-          onPress={() => setRemember(!remember)}
-        >
-          <View
-            className={`w-4 h-4 border border-gray-700 mr-2 rounded ${
-              remember ? "bg-[#7f56da]" : "bg-white"
-            }`}
-          />
-          <Text className="text-gray-500">Remember me</Text>
-        </TouchableOpacity>
 
         <TouchableOpacity
           onPress={handleLogin}
