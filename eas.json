@@ -1,0 +1,29 @@
+{
+	"cli": {
+		"version": ">= 16.26.0",
+		"appVersionSource": "remote"
+	},
+	"build": {
+		"development": {
+			"developmentClient": true,
+			"distribution": "internal"
+		},
+		"preview": {
+			"distribution": "internal"
+		},
+		"production": {
+			"android": {
+				"image": "ubuntu-22.04-jdk-17-ndk-r25b"
+			},
+			"env": {
+				"NODE_OPTIONS": "--openssl-legacy-provider",
+				"EAS_FORCE_CLEAN_BUILD": "1",
+				"CI": "true",
+				"EX_DEV_CLIENT": "false"
+			}
+		}
+	},
+	"submit": {
+		"production": {}
+	}
+}
