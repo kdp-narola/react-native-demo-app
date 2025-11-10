@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
 import AuthContext, { AuthType } from "./Contexts/authContext";
 
-const Login: React.FC = () => {
+const Signup: React.FC = () => {
   const { setUserData, userData } = useContext(AuthContext) as AuthType;
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -15,18 +15,19 @@ const Login: React.FC = () => {
     if (userData) router.replace("/(tabs)/tasks");
   }, [userData]);
 
-  const handleLogin = () => {
+  const handleSignup = () => {
     if (!email || !password) {
-      setError("Please enter email and password");
+      setError("Please enter a email and password");
       return;
     }
 
-    if (email === "admin@gmail.com" && password === "1234") {
-      setUserData({ email });
-      setError("");
-    } else {
-      setError("Invalid email or password");
-    }
+    // TODO: API call here and set userData in context
+    // if (email === "admin" && password === "1234") {
+    //   setUserData({ email });
+    //   setError("");
+    // } else {
+    //   setError("Invalid email or password");
+    // }
   };
 
   return (
@@ -40,10 +41,10 @@ const Login: React.FC = () => {
 
       <View className="w-full h-full flex flex-col justify-center items-start sm:min-w-[500px] sm:max-w-[500px] lg:min-w-[400px] lg:max-w-[400px] mx-auto">
         <Text className="text-4xl font-bold text-gray-800 mb-3">
-          Welcome to Tasker
+          Create Your Account
         </Text>
         <Text className="text-base text-gray-500 mb-6">
-          Please, login to access your dashboard.
+          Fill in your details to get started with Tasker.
         </Text>
 
         {error ? (
@@ -54,7 +55,7 @@ const Login: React.FC = () => {
         <TextInput
           value={email}
           onChangeText={setEmail}
-          placeholder="Insert your email"
+          placeholder="Enter your email"
           className="w-full sm:w-[500px] lg:w-72 h-12 rounded-lg border border-gray-400 px-2 text-gray-700 mb-4"
         />
 
@@ -62,7 +63,7 @@ const Login: React.FC = () => {
         <TextInput
           value={password}
           onChangeText={setPassword}
-          placeholder="Insert your password"
+          placeholder="Create a password"
           secureTextEntry
           className="w-full sm:w-[500px] lg:w-72 h-12 rounded-lg border border-gray-400 px-2 text-gray-700 mb-4"
         />
@@ -80,19 +81,19 @@ const Login: React.FC = () => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={handleLogin}
+          onPress={handleSignup}
           className="w-full sm:w-[500px] lg:w-72 h-12 rounded-lg bg-[#7f56da] flex items-center justify-center"
         >
-          <Text className="text-white text-base font-medium">Sign In</Text>
+          <Text className="text-white text-base font-medium">Sign Up</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => router.push('/signup')}
-          className="text-gray-500 mt-3 text-center lg:text-left w-full"
+          onPress={() => router.push("/login")}
+          className="mt-3 w-full"
         >
-          <View className="flex w-full flex-row">
-            <Text>Don't have an account?{" "}</Text>
-            <Text className="text-purple-600 font-bold">Sign Up</Text>
+          <View className="flex flex-row">
+            <Text className="text-gray-600">Already have an account? </Text>
+            <Text className="text-purple-600 font-bold">Sign In</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -100,4 +101,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Signup;

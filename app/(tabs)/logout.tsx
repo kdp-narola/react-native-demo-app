@@ -12,7 +12,7 @@ export default function LogoutScreen() {
   useEffect(() => {
     const logout = async () => {
       try {
-        await AsyncStorage.removeItem("username");
+        await AsyncStorage.removeItem("email");
         await AsyncStorage.removeItem("isLoggedIn");
 
         setUserData(null);

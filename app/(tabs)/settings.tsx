@@ -20,11 +20,10 @@ export default function SettingsScreen() {
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(true);
 
-  const [username, setUsername] = useState(userData?.username || "");
-  const [email, setEmail] = useState(userData?.username || "");
+  const [email, setEmail] = useState(userData?.email || "");
 
   const handleSaveProfile = () => {
-    setUserData({ ...userData, username });
+    setUserData({ ...userData, email });
     alert("Profile updated!");
   };
 
@@ -38,13 +37,6 @@ export default function SettingsScreen() {
       case "Profile":
         return (
           <View style={styles.section}>
-            <Text style={styles.label}>Username</Text>
-            <TextInput
-              style={styles.input}
-              value={username}
-              onChangeText={setUsername}
-              placeholder="Enter username"
-            />
             <Text style={styles.label}>Email</Text>
             <TextInput
               style={styles.input}
