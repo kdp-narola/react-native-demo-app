@@ -14,7 +14,7 @@ import { AuthContext, AuthContextType } from "../Contexts/authContext";
 
 export default function TabLayout() {
 	const colorScheme = useColorScheme();
-	const { user } = useContext(AuthContext) as AuthContextType;
+	const { token } = useContext(AuthContext) as AuthContextType;
 	const router = useRouter();
 	const pathname = usePathname();
 	const { width } = useWindowDimensions();
@@ -25,10 +25,10 @@ export default function TabLayout() {
 		Platform.OS !== "web" || (Platform.OS === "web" && width < 768);
 
 	useEffect(() => {
-		if (!user && pathname !== "/login") {
+		if (!token && pathname !== "/login") {
 			router.replace("/login");
 		}
-	}, [user]);
+	}, [token]);
 
 	useEffect(() => {
 		const loadCategory = async () => {

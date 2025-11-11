@@ -7,9 +7,9 @@ const Signup: React.FC = () => {
   const { signup } = useAuth();
   const router = useRouter();
 
-  const [username, setUsername] = useState("")
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("abc")
+  const [email, setEmail] = useState("abc@gmail.com");
+  const [password, setPassword] = useState("1234");
   const [error, setError] = useState("");
 
   const handleSignup = async () => {

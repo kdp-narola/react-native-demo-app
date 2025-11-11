@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 
 const api: AxiosInstance = axios.create({
-  baseURL: process.env.API_URL || "http://localhost:8080",
+  baseURL: process.env.EXPO_PUBLIC_API_URL || "https://react-native-backend-ublz.onrender.com",
   headers: {
     "Content-Type": "application/json",
   },
