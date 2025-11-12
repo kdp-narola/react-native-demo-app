@@ -18,7 +18,7 @@ export interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   signup: (data: { username: string; email: string; password: string }) => Promise<void>;
   logout: () => Promise<void>;
-  refreshUser: () => Promise<void>; // 👈 new helper to call /auth/me manually if needed
+  refreshUser: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -36,6 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           api.defaults.headers.common["Authorization"] = `Bearer ${savedToken}`;
           setToken(savedToken);
           await fetchUser();
+          setLoading(false);
         }
       } catch (err) {
         console.log("Failed to fetch user:", err);

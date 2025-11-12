@@ -14,7 +14,7 @@ import { AuthContext, AuthContextType } from "../Contexts/authContext";
 
 export default function TabLayout() {
 	const colorScheme = useColorScheme();
-	const { token } = useContext(AuthContext) as AuthContextType;
+	const { user, loading } = useContext(AuthContext) as AuthContextType;
 	const router = useRouter();
 	const pathname = usePathname();
 	const { width } = useWindowDimensions();
@@ -25,17 +25,23 @@ export default function TabLayout() {
 		Platform.OS !== "web" || (Platform.OS === "web" && width < 768);
 
 	useEffect(() => {
-		if (!token && pathname !== "/login") {
-			router.replace("/login");
-		}
-	}, [token]);
+		const handleAuth = async () => {
+			if (!loading) {
+				if (!user) {
+					await AsyncStorage.setItem("redirectAfterLogin", pathname);
+					router.replace("/login");
+				} else {
+					await AsyncStorage.setItem("lastVisited", pathname);
+				}
+			}
+		};
+		handleAuth();
+	}, [user, loading, pathname]);
 
 	useEffect(() => {
 		const loadCategory = async () => {
 			const saved = await AsyncStorage.getItem("selectedCategory");
-			if (saved) {
-				setSelectedCategory(saved);
-			}
+			if (saved) setSelectedCategory(saved);
 		};
 		loadCategory();
 	}, []);
